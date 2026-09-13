@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoBlog.INC</title>
+    <style>
+        /* ============ ОБЩИЕ СТИЛИ ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            overflow-y: auto;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            background: #000000;
+            overflow: hidden;
+        }
+
+        /* ============ ЗВЁЗДЫ ============ */
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            will-change: transform;
+            transition: none;
+        }
+
+        /* ============ ГРАДИЕНТЫ ============ */
+        .gradient {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.45;
+            background:
+                radial-gradient(ellipse at 50% 100%,
+                    rgba(0, 80, 255, 0.95) 0%,
+                    rgba(0, 60, 220, 0.8) 15%,
+                    rgba(0, 40, 180, 0.6) 30%,
+                    rgba(0, 25, 120, 0.4) 50%,
+                    rgba(0, 10, 60, 0.2) 70%,
+                    transparent 100%);
+        }
+
+        .gradient::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background:
+                radial-gradient(ellipse at 50% 100%,
+                    rgba(80, 180, 255, 0.7) 0%,
+                    rgba(40, 140, 255, 0.4) 25%,
+                    rgba(0, 100, 255, 0.15) 50%,
+                    transparent 80%);
+            filter: blur(8px);
+        }
+
+        .gradient::after {
+            content: '';
+            position: absolute;
+            bottom: 5%;
+            left: 5%;
+            width: 90%;
+            height: 50%;
+            background:
+                radial-gradient(ellipse at 30% 100%,
+                    rgba(100, 200, 255, 0.25) 0%,
+                    rgba(50, 150, 255, 0.1) 40%,
+                    transparent 70%);
+            filter: blur(25px);
+        }
+
+        .gradient-glow {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0.45;
+            background:
+                linear-gradient(to top,
+                    rgba(0, 100, 255, 0.5) 0%,
+                    rgba(0, 60, 200, 0.25) 30%,
+                    rgba(0, 30, 150, 0.1) 60%,
+                    transparent 100%);
+            filter: blur(15px);
+        }
+
+        .gradient-edge {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.45;
+            background:
+                radial-gradient(ellipse at 20% 100%,
+                    rgba(0, 150, 255, 0.15) 0%,
+                    transparent 50%),
+                radial-gradient(ellipse at 80% 100%,
+                    rgba(0, 150, 255, 0.15) 0%,
+                    transparent 50%);
+            filter: blur(30px);
+        }
+
+        /* ============ КОНТЕНТ ============ */
+        .content {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px 100px;
+        }
+
+        /* ============ ШАПКА ============ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: rgba(0, 20, 60, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #4fc3ff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 100, 255, 0.3);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header-right .badge {
+            padding: 6px 16px;
+            background: rgba(255, 145, 0, 0.15);
+            border: 1px solid rgba(255, 145, 0, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #ffab40;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-right .badge:hover {
+            background: rgba(255, 145, 0, 0.25);
+            transform: scale(1.05);
+        }
+
+        .header-right .badge.active {
+            background: rgba(79, 195, 255, 0.2);
+            border-color: #4fc3ff;
+            color: #4fc3ff;
+        }
+
+        /* ============ СЧЁТЧИК ПОСЕТИТЕЛЕЙ ============ */
+        .visitor-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(0, 200, 80, 0.1);
+            border: 1px solid rgba(0, 200, 80, 0.2);
+            border-radius: 20px;
+            font-size: 13px;
+            color: #69f0ae;
+        }
+
+        .visitor-counter .count {
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        /* ============ ВКЛАДКИ ============ */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .tab-btn {
+            padding: 12px 28px;
+            background: rgba(0, 20, 60, 0.4);
+            border: 1px solid rgba(100, 200, 255, 0.1);
+            border-radius: 14px;
+            color: #90caf9;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 40, 100, 0.4);
+            border-color: rgba(100, 200, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 100, 255, 0.2);
+            border-color: #4fc3ff;
+            color: #4fc3ff;
+            box-shadow: 0 0 30px rgba(79, 195, 255, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ СТРАНИЦА DOWNLOAD ============ */
+        .download-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .download-page h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff6f00, #ff9100);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .download-page p {
+            color: #b0bec5;
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .download-page .funky-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            margin: 0 auto 30px;
+            display: block;
+            box-shadow: 0 10px 40px rgba(255, 145, 0, 0.2);
+            border: 2px solid rgba(255, 145, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .download-page .funky-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 50px rgba(255, 145, 0, 0.3);
+        }
+
+        .funky-btn {
+            display: inline-block;
+            padding: 20px 60px;
+            background: linear-gradient(135deg, #ff6f00, #ff9100);
+            border: none;
+            border-radius: 20px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(255, 145, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .funky-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .funky-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(255, 145, 0, 0.5);
+        }
+
+        .funky-btn:active {
+            transform: scale(0.95);
+        }
+
+        .sub-buttons {
+            display: none;
+            margin-top: 40px;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .sub-buttons.open {
+            display: flex;
+        }
+
+        .sub-btn {
+            display: inline-block;
+            padding: 16px 40px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .sub-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .sub-btn.gamebanana {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .sub-btn.gamebanana:hover {
+            background: linear-gradient(135deg, #ff6b35, #e85d2c);
+            color: #fff;
+            border-color: #ff6b35;
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .sub-btn.gamejolt {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .sub-btn.gamejolt:hover {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #fff;
+            border-color: #00d4ff;
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        /* ============ ПОСТЫ ============ */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .post-card {
+            background: rgba(0, 20, 60, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 300px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .post-card:active {
+            transform: scale(0.96);
+            transition-duration: 0.05s;
+        }
+
+        .post-card .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(79, 195, 255, 0.3);
+            transform: scale(0);
+            animation: rippleAnim 0.8s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        .post-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(79, 195, 255, 0.05), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .post-card:hover::after {
+            opacity: 1;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 200, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 100, 255, 0.15);
+        }
+
+        /* Золотая рамка для постов автора */
+        .post-card.author-post {
+            border-color: rgba(255, 179, 0, 0.35);
+            background: linear-gradient(135deg, rgba(40, 25, 0, 0.5), rgba(0, 20, 60, 0.4));
+            box-shadow: 0 0 30px rgba(255, 179, 0, 0.08);
+        }
+        .post-card.author-post:hover {
+            border-color: rgba(255, 179, 0, 0.6);
+            box-shadow: 0 10px 40px rgba(255, 179, 0, 0.2);
+        }
+        .post-card.author-post .post-author {
+            color: #ffd54f;
+        }
+        .post-card.author-post .read-more {
+            color: #ffb300;
+        }
+
+        .post-card .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #90caf9;
+            flex-shrink: 0;
+        }
+
+        .post-card .post-author {
+            font-weight: 600;
+            color: #4fc3ff;
+        }
+
+        .post-card .post-date {
+            opacity: 0.7;
+        }
+
+        .post-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .post-card .post-content-preview {
+            color: #b0bec5;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+        }
+
+        .post-card .post-image-wrapper {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .post-card .post-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .post-card:hover .post-image-wrapper img {
+            transform: scale(1.03);
+        }
+
+        .post-card .post-image-placeholder {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(0, 80, 255, 0.1), rgba(0, 40, 180, 0.05));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 48px;
+            flex-shrink: 0;
+        }
+
+        .post-card .read-more {
+            color: #4fc3ff;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        .post-card:hover .read-more {
+            opacity: 1;
+        }
+
+        .post-card .dev-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            background: linear-gradient(135deg, #ff6f00, #ff9100);
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+        }
+
+        /* ============ БЕЙДЖ АВТОРА ============ */
+        .author-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            background: linear-gradient(135deg, #ffb300, #ff8f00);
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #3e1f00;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-left: 8px;
+            box-shadow: 0 0 12px rgba(255, 179, 0, 0.4);
+        }
+
+        .empty-posts {
+            text-align: center;
+            padding: 60px 20px;
+            color: #90caf9;
+            grid-column: 1 / -1;
+        }
+
+        .empty-posts .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-posts .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .empty-posts .empty-desc {
+            font-size: 16px;
+            opacity: 0.6;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #4fc3ff;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+
+        /* ============ МОДАЛЬНОЕ ОКНО ============ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #0a1a3a, #06102a);
+            border-radius: 24px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            position: relative;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(79, 195, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .modal-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            margin-left: auto;
+            margin-bottom: 10px;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 23, 68, 0.2);
+            border-color: #ff1744;
+            transform: rotate(90deg);
+        }
+
+        .modal-content .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #90caf9;
+            clear: both;
+        }
+
+        .modal-content .post-author {
+            font-weight: 600;
+            color: #4fc3ff;
+        }
+
+        .modal-content .post-date {
+            opacity: 0.7;
+        }
+
+        .modal-content h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .modal-content .post-full-content {
+            color: #b0bec5;
+            line-height: 1.8;
+            font-size: 16px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .modal-content .post-full-content .modal-image-wrapper {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .modal-content .post-full-content .modal-image-wrapper img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .modal-content .dev-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            background: linear-gradient(135deg, #ff6f00, #ff9100);
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+        }
+
+        /* ============ СКРОЛЛБАР ============ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(79, 195, 255, 0.3), rgba(0, 100, 255, 0.2));
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(79, 195, 255, 0.5), rgba(0, 100, 255, 0.3));
+        }
+
+        /* ============ АДАПТИВНОСТЬ ============ */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .header-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .modal-content {
+                padding: 25px;
+                margin: 10px;
+                max-height: 95vh;
+            }
+
+            .modal-content h2 {
+                font-size: 22px;
+            }
+
+            .modal-close {
+                top: 10px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+                font-size: 20px;
+                float: none;
+                margin: 0 0 10px auto;
+            }
+
+            .post-card .post-image-wrapper {
+                height: 180px;
+            }
+
+            .post-card .post-image-placeholder {
+                height: 180px;
+                font-size: 36px;
+            }
+
+            .modal-content .post-full-content .modal-image-wrapper img {
+                max-height: 300px;
+            }
+
+            .download-page h2 {
+                font-size: 28px;
+            }
+
+            .download-page .funky-image {
+                max-width: 100%;
+            }
+
+            .funky-btn {
+                padding: 16px 40px;
+                font-size: 22px;
+            }
+
+            .sub-btn {
+                padding: 14px 30px;
+                font-size: 16px;
+                width: 100%;
+            }
+
+            .sub-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tab-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                flex: 1;
+                text-align: center;
+            }
+
+            .visitor-counter {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+
+            .visitor-counter .count {
+                font-size: 14px;
+            }
+
+            .post-card:active {
+                transform: scale(0.97);
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .gradient {
+                height: 40%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ЗВЁЗДЫ -->
+        <div id="stars"></div>
+        <div class="gradient"></div>
+        <div class="gradient-glow"></div>
+        <div class="gradient-edge"></div>
+
+        <!-- КОНТЕНТ -->
+        <div class="content">
+            <!-- ШАПКА -->
+            <header class="header">
+                <h1>EchoBlog.INC</h1>
+                <div class="header-right">
+                    <div class="visitor-counter">
+                        <span>👥 Онлайн:</span>
+                        <span class="count" id="visitorCount">1</span>
+                    </div>
+                    <span class="badge" id="blogTabBtn">Блог</span>
+                    <span class="badge" id="downloadTabBtn">Скачать</span>
+                </div>
+            </header>
+
+            <!-- ВКЛАДКИ -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="blog">Блог</button>
+                <button class="tab-btn" data-tab="download">Скачать</button>
+            </div>
+
+            <!-- ВКЛАДКА: БЛОГ -->
+            <div class="tab-content active" id="tab-blog">
+                <div id="postsContainer">
+                    <div class="posts-grid" id="postsGrid">
+                        <div class="loading">Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА: СКАЧАТЬ -->
+            <div class="tab-content" id="tab-download">
+                <div class="download-page">
+                    <h2>FunkyMogus</h2>
+                    <p>
+                        Скачай мод FunkyMogus для Friday Night Funkin'!<br>
+                        Нажми на кнопку ниже, чтобы выбрать платформу для скачивания.
+                    </p>
+
+                    <img src="images/funkymogus.png" alt="FunkyMogus" class="funky-image" 
+                         onerror="this.style.display='none'">
+
+                    <button class="funky-btn" id="funkyBtn">FunkyMogus</button>
+
+                    <div class="sub-buttons" id="subButtons">
+                        <a href="https://gamebanana.com/mods/684716" target="_blank" class="sub-btn gamebanana">
+                            Gamebanana
+                        </a>
+                        <a href="https://gamejolt.com/games/funkymogus/960415" target="_blank" class="sub-btn gamejolt">
+                            Gamejolt
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div class="modal-overlay" id="postModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">✕</button>
+            <div id="modalBody">
+                <div class="post-meta">
+                    <span class="post-author" id="modalAuthor">Автор</span>
+                    <span class="post-date" id="modalDate">Дата</span>
+                </div>
+                <h2 id="modalTitle">Заголовок</h2>
+                <div class="post-full-content" id="modalContent">Содержание</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ ЗВЁЗДЫ ============
+        (function() {
+            const starsContainer = document.getElementById('stars');
+            const STAR_COUNT = 300;
+            const sizes = [0.5, 0.7, 0.9, 1.1, 1.4, 1.7, 2.0, 2.5, 3.0, 3.5];
+            let stars = [];
+
+            function moveStar(star) {
+                const speed = star.dataset.speed || (1 + Math.random() * 2);
+                let newLeft = parseFloat(star.style.left) - speed * 0.05;
+
+                if (newLeft < -20) {
+                    newLeft = 100 + Math.random() * 30;
+                    star.style.top = Math.random() * 100 + '%';
+                    const size = sizes[Math.floor(Math.random() * sizes.length)];
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    const opacity = 0.4 + Math.random() * 0.6;
+                    star.style.opacity = opacity;
+                    if (size > 2.5) {
+                        star.style.boxShadow = '0 0 5px rgba(255,255,255,0.4)';
+                    } else {
+                        star.style.boxShadow = 'none';
+                    }
+                    star.dataset.speed = 1 + Math.random() * 2.5;
+                }
+
+                star.style.left = newLeft + '%';
+                requestAnimationFrame(() => moveStar(star));
+            }
+
+            function createInitialStars() {
+                for (let i = 0; i < STAR_COUNT; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    const size = sizes[Math.floor(Math.random() * sizes.length)];
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    const left = (i / STAR_COUNT) * 130 - 20;
+                    star.style.left = left + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    const opacity = 0.4 + Math.random() * 0.6;
+                    star.style.opacity = opacity;
+                    star.dataset.speed = 1 + Math.random() * 2.5;
+                    if (size > 2.5) {
+                        star.style.boxShadow = '0 0 5px rgba(255,255,255,0.4)';
+                    }
+                    starsContainer.appendChild(star);
+                    stars.push(star);
+                }
+            }
+
+            createInitialStars();
+            stars.forEach(star => moveStar(star));
+        })();
+
+        // ============ СЧЁТЧИК ПОСЕТИТЕЛЕЙ ============
+        (function() {
+            let visitorId = localStorage.getItem('visitorId');
+            if (!visitorId) {
+                visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('visitorId', visitorId);
+            }
+
+            let count = parseInt(localStorage.getItem('visitorCount') || '0');
+            const today = new Date().toDateString();
+            const lastVisit = localStorage.getItem('lastVisitDate');
+
+            if (lastVisit !== today) {
+                count++;
+                localStorage.setItem('visitorCount', count.toString());
+                localStorage.setItem('lastVisitDate', today);
+            }
+
+            document.getElementById('visitorCount').textContent = count;
+
+            setInterval(() => {
+                const currentCount = parseInt(localStorage.getItem('visitorCount') || '0');
+                document.getElementById('visitorCount').textContent = currentCount;
+            }, 10000);
+        })();
+
+        // ============ ВКЛАДКИ ============
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+                const tabId = this.dataset.tab;
+                document.getElementById('tab-' + tabId).classList.add('active');
+            });
+        });
+
+        // ============ КНОПКА FUNKYMOGUS ============
+        document.getElementById('funkyBtn').addEventListener('click', function() {
+            const subButtons = document.getElementById('subButtons');
+            subButtons.classList.toggle('open');
+
+            if (subButtons.classList.contains('open')) {
+                this.textContent = 'Скрыть варианты';
+            } else {
+                this.textContent = 'FunkyMogus';
+            }
+        });
+
+        // ============ ПОСТЫ ============
+        let posts = [];
+
+        function parseContent(content, isModal = false) {
+            if (!content) return 'Нет содержимого';
+
+            const parts = content.split(/!image:\(([^)]+)\)/);
+            let result = '';
+
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 0) {
+                    const text = parts[i].trim();
+                    if (text) {
+                        result += `<span>${text}</span>`;
+                    }
+                } else {
+                    const imageName = parts[i].trim();
+                    if (imageName) {
+                        const ext = imageName.split('.').pop().toLowerCase();
+                        const validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+                        const imagePath = validExts.includes(ext) ?
+                            `images/${imageName}` :
+                            `images/${imageName}.jpg`;
+
+                        if (isModal) {
+                            result += `
+                                <div class="modal-image-wrapper">
+                                    <img src="${imagePath}" alt="${imageName}" 
+                                         onerror="this.parentElement.innerHTML='<span style=\\'color:#ff6b6b;\\'>⚠️ Картинка не найдена: ${imageName}</span>'">
+                                </div>
+                            `;
+                        } else {
+                            result += `
+                                <div style="margin: 10px 0;">
+                                    <img src="${imagePath}" alt="${imageName}" 
+                                         style="width:100%; max-height:300px; object-fit:cover; border-radius:12px;"
+                                         onerror="this.style.display='none'">
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        function getPlainText(content) {
+            if (!content) return '';
+            return content.replace(/!image:\([^)]+\)/g, '').trim();
+        }
+
+        function getFirstImage(content) {
+            if (!content) return null;
+            const match = content.match(/!image:\(([^)]+)\)/);
+            if (match) {
+                const imageName = match[1].trim();
+                const ext = imageName.split('.').pop().toLowerCase();
+                const validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+                return validExts.includes(ext) ? `images/${imageName}` : `images/${imageName}.jpg`;
+            }
+            return null;
+        }
+
+        async function loadPosts() {
+            try {
+                const response = await fetch('./posts.json?' + Date.now());
+                if (!response.ok) throw new Error('Файл не найден');
+                const data = await response.json();
+                posts = data;
+                renderPosts();
+                setTimeout(initCardEffects, 100);
+                return true;
+            } catch (error) {
+                posts = [];
+                renderPosts();
+                return false;
+            }
+        }
+
+        function renderPosts() {
+            const grid = document.getElementById('postsGrid');
+            if (!grid) return;
+
+            if (!posts || posts.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-posts">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-title">Извините, но постов пока нет</div>
+                        <div class="empty-desc">Скоро здесь появятся новые записи. Загляните позже!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = posts.map(post => {
+                const firstImage = getFirstImage(post.content);
+                const plainText = getPlainText(post.content);
+                const previewText = plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
+
+                const isAuthor = !!post.isAuthor;
+                const badge = isAuthor
+                    ? '<span class="author-badge">AUTHOR</span>'
+                    : (post.isDev ? '<span class="dev-badge">DEV</span>' : '');
+
+                return `
+                    <div class="post-card ${isAuthor ? 'author-post' : ''}" onclick="openPost(${post.id})">
+                        <div class="post-meta">
+                            <span class="post-author">${post.author || 'Аноним'}${badge}</span>
+                            <span class="post-date">${post.date || 'Дата не указана'}</span>
+                        </div>
+                        ${firstImage ? `
+                            <div class="post-image-wrapper">
+                                <img src="${firstImage}" alt="${post.title}" loading="lazy" onerror="this.parentElement.style.display='none'">
+                            </div>
+                        ` : `
+                            <div class="post-image-placeholder">${isAuthor ? '⭐' : '🌠'}</div>
+                        `}
+                        <h3>${post.title || 'Без заголовка'}</h3>
+                        <div class="post-content-preview">${previewText || 'Нет содержимого'}</div>
+                        <div class="read-more">Читать полностью →</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ ЭФФЕКТЫ КАРТОЧЕК ============
+        function initCardEffects() {
+            const cards = document.querySelectorAll('.post-card');
+
+            cards.forEach(card => {
+                card.removeEventListener('click', card._rippleHandler);
+                card.removeEventListener('mousemove', card._moveHandler);
+
+                const rippleHandler = function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    this.appendChild(ripple);
+
+                    setTimeout(() => { ripple.remove(); }, 800);
+                };
+
+                card.addEventListener('click', rippleHandler);
+                card._rippleHandler = rippleHandler;
+
+                const moveHandler = function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    this.style.setProperty('--x', x + '%');
+                    this.style.setProperty('--y', y + '%');
+                };
+
+                card.addEventListener('mousemove', moveHandler);
+                card._moveHandler = moveHandler;
+            });
+        }
+
+        // ============ МОДАЛЬНОЕ ОКНО ============
+        function openPost(id) {
+            const post = posts.find(p => p.id === id);
+            if (!post) return;
+
+            const modal = document.getElementById('postModal');
+            const isAuthor = !!post.isAuthor;
+            const badge = isAuthor
+                ? '<span class="author-badge">AUTHOR</span>'
+                : (post.isDev ? '<span class="dev-badge">DEV</span>' : '');
+
+            document.getElementById('modalAuthor').innerHTML = (post.author || 'Аноним') + badge;
+            document.getElementById('modalDate').textContent = post.date || 'Дата не указана';
+            document.getElementById('modalTitle').textContent = post.title || 'Без заголовка';
+
+            const parsedContent = parseContent(post.content || 'Нет содержимого', true);
+            document.getElementById('modalContent').innerHTML = parsedContent;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('postModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+
+        // ============ ЗАПУСК ============
+        async function init() {
+            await loadPosts();
+            initCardEffects();
+            setInterval(async () => {
+                await loadPosts();
+            }, 30000);
+        }
+
+        init();
+
+        console.log('EchoBlog.INC запущен!');
+        console.log('Используйте тег !image:(имя_фото) для вставки картинок');
+        console.log('Картинки должны лежать в папке images/');
+    </script>
+</body>
+</html>
